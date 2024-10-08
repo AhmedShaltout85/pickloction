@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class LocationsRepos {
   //GET LOCATIONS
   static Future fetchLocationsList() async {
-    final response = await http.get(
+    try {
+      final response = await http.get(
         // Uri.parse('http://localhost:9999/pick-location/api/v1/get-loc/filter')); //to get all locations
         Uri.parse(
             'http://localhost:9999/pick-location/api/v1/get-loc/flag/0')); //to get all locations with flag 0
@@ -27,10 +29,15 @@ class LocationsRepos {
       // then throw an exception.
       throw Exception('Failed to load LocationsList');
     }
+    }catch (e) {
+      debugPrint(e.toString());
+      throw Exception(e.toString());
+    }
   }
 // UPDATE FLAG
-  static Future updateLocations(int id, String latitude, String longitude) async {
-    final response = await http.put(
+  static Future updateLocations(int id, String latitude, String longitude, String realAddress) async {
+    try {
+         final response = await http.put(
         Uri.parse(
             'http://localhost:9999/pick-location/api/v1/get-loc/$id'),
         headers: <String, String>{
@@ -39,7 +46,8 @@ class LocationsRepos {
         body: jsonEncode(<String, String>{
           'flag': '1',  //to update flag to 1
           'latitude': latitude,
-          'longitude': longitude
+          'longitude': longitude,
+          'real_address': realAddress,
         }));
 
     if (response.statusCode == 200) {
@@ -51,9 +59,14 @@ class LocationsRepos {
       // then throw an exception.
       throw Exception('Failed to update flag.');
     }
+  } catch (e) {
+    debugPrint(e.toString());
+    throw Exception(e.toString());
+  }
+    }
   }
 
-}
+
 
 
 
