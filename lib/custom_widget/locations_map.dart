@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
@@ -40,6 +42,7 @@ class _LocationsMapState extends State<LocationsMap> {
             widget.id,
             pickedData.latLong.latitude.toString(),
             pickedData.latLong.longitude.toString(),
+            pickedData.addressName ,
           );
           debugPrint("after update: " + widget.id.toString());
           setState(() {

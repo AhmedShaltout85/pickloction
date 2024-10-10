@@ -1,12 +1,18 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 import 'package:pickloction/repositories/locations_repos.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  MyHomePage({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
 
   final String title;
+  List data = [];
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -58,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   future: futureLocationsList,
                   builder: (context, AsyncSnapshot snapshot) {
                     if (snapshot.hasData) {
-                      List data = snapshot.data;
+                      widget.data = snapshot.data;
                       return ListView.builder(
                           itemCount: snapshot.data.length,
                           itemBuilder: (context, index) {
@@ -70,25 +76,25 @@ class _MyHomePageState extends State<MyHomePage> {
                                         const EdgeInsetsDirectional.all(10.0),
                                     elevation: 2.0,
                                     child: ListTile(
-                                      title: Text("${data[index]['address']}"),
+                                      title: Text(
+                                          "${widget.data[index]['address']}"),
                                       subtitle: Text(
-                                          "${data[index]['latitude']}, ${data[index]['longitude']}"),
+                                          "${widget.data[index]['latitude']}, ${widget.data[index]['longitude']}"),
                                       leading: CircleAvatar(
                                         backgroundColor: Colors.blueAccent,
                                         radius: 23,
-                                        child: Text("${data[index]['id']}"),
+                                        child:
+                                            Text("${widget.data[index]['id']}"),
                                       ),
                                     ),
                                   ),
                                   onTap: () {
-                                    debugPrint("${data[index]['id']}");
+                                    debugPrint("${widget.data[index]['id']}");
                                     //CALL API TO UPDATE LOCATION
-                                    id = data[index]['id'];
+                                    id = widget.data[index]['id'];
                                     //copy to clipboard
                                     Clipboard.setData(ClipboardData(
-                                        text: data[index]['address']
-                                            .toString()
-                                            .substring(0, 28)));
+                                        text: widget.data[index]['address']));
 
                                     // Show a SnackBar to notify the user that the text is copied
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -131,24 +137,30 @@ class _MyHomePageState extends State<MyHomePage> {
                   debugPrint(pickedData.addressName);
                   debugPrint("before update: " + id.toString());
 
-                  //CALL API TO UPDATE LOCATION
-                  await LocationsRepos.updateLocations(
-                    id,
-                    pickedData.latLong.latitude.toString(),
-                    pickedData.latLong.longitude.toString(),
-                    pickedData.addressName,
-                  );
-                  debugPrint("after update: " + id.toString());
-                  setState(() {
-                    futureLocationsList = LocationsRepos.fetchLocationsList();
-                  });
-                  // Retrieve the copied text from the clipboard
-                  ClipboardData? data = await Clipboard.getData('text/plain');
-                  // Paste the text into the TextField
-                  if (data != null && data.text != null) {
-                    debugPrint("Pasted text: ${data.text}");
+                  if (widget.data.isEmpty) {
+                    debugPrint("data is empty");
+                  } else {
+                   await LocationsRepos.updateLocations(
+                      id,
+                      pickedData.latLong.latitude.toString(),
+                      pickedData.latLong.longitude.toString(),
+                      pickedData.addressName,
+                    );
+                    debugPrint("after update: " + id.toString());
+                    setState(() {
+                      futureLocationsList = LocationsRepos.fetchLocationsList();
+                    });
+                    // Retrieve the copied text from the clipboard
+                    ClipboardData? data = await Clipboard.getData('text/plain');
+                    // Paste the text into the TextField
+                    if (data != null && data.text != null) {
+                      debugPrint("Pasted text: ${data.text}");
+                    }
                   }
+                  //tost message not working
                 },
+                //CALL API TO UPDATE LOCATION
+
                 locationPinText: "Pick Location",
               ),
             ),
@@ -158,5 +170,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-

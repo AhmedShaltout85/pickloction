@@ -36,7 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   open_street_map_search_and_pick: ^0.1.1
   http: ^1.2.2
-  liquid_pull_to_refresh: ^3.0.1
+  # liquid_pull_to_refresh: ^3.0.1
+  # toast: ^0.3.0
 
 dev_dependencies:
   flutter_test:
